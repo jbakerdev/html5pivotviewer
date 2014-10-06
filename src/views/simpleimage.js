@@ -23,7 +23,7 @@ PivotViewer.Views.SimpleImageController = PivotViewer.Views.IImageController.sub
 
         this._items = [];
         this._collageItems = [];
-        this._baseUrl = "";
+        this._baseUrl = location.origin;
         this._collageMaxLevel = 0;
         this._tileSize = 256;
         this._format = "";
@@ -50,7 +50,7 @@ PivotViewer.Views.SimpleImageController = PivotViewer.Views.IImageController.sub
             for (var i = 0; i < images.ImageFiles.length; i++) {
                 var img = new Image(); 
                 img.src = that._baseUrl + "/" + images.ImageFiles[i];
-                that._items.push(new PivotViewer.Views.SimpleImageItem(images.ImageFiles[i], that._baseUrl, img.width, img.height, img));
+                that._items.push(new PivotViewer.Views.SimpleImageItem(images.ImageFiles[i], that._baseUrl, 100, 100, img));
            }
 
            //Loaded image file list
