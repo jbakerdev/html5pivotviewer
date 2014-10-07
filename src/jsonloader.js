@@ -23,7 +23,7 @@ PivotViewer.Models.Loaders.JSONLoader = PivotViewer.Models.Loaders.ICollectionLo
         var myRequest = new XMLHttpRequest();
 
         myRequest.withCredentials = true;
-        myRequest.open('GET', 'http://localhost:7001/slm/webservice/v2.0/hierarchicalrequirement?projectId='+currentProject);
+        myRequest.open('GET', this.JSONUri);
         myRequest.context = this;
         myRequest.onreadystatechange = function () {
             if (this.status == 200 && this.readyState == 4) {
@@ -39,57 +39,80 @@ PivotViewer.Models.Loaders.JSONLoader = PivotViewer.Models.Loaders.ICollectionLo
     _hydrateCollections: function(data){
 
         data = data.QueryResult;
-        data.CollectionName = 'User Stories in Project';
+        data.CollectionName = 'User Stories in Project ID '+currentProject;
         data.FacetCategories = {
             "FacetCategory": [
+                {
+                    "Name": "Name",
+                    "Type": "String",
+                    "IsWordWheelVisible": "true",
+                    "IsFilterVisible": "true"
+                },
                 {
                     "Name": "Creation Date",
                     "Type": "DateTime",
                     "IsFilterVisible": "true",
-                    "IsMetaDataVisible": "true",
-                    "IsWordWheelVisible": "true"
+                    "IsMetaDataVisible": "true"
                 },
                 {
                     "Name": "Workspace",
                     "Type": "String",
                     "IsFilterVisible": "true",
-                    "IsMetaDataVisible": "true",
-                    "IsWordWheelVisible": "true"
+                    "IsMetaDataVisible": "true"
                 },
                 {
                     "Name": "Subscription",
                     "Type": "String",
                     "IsFilterVisible": "true",
-                    "IsMetaDataVisible": "true",
-                    "IsWordWheelVisible": "true"
+                    "IsMetaDataVisible": "true"
                 },
                 {
                     "Name": "Expedite",
                     "Type": "Boolean",
                     "IsFilterVisible": "true",
-                    "IsMetaDataVisible": "true",
-                    "IsWordWheelVisible": "true"
+                    "IsMetaDataVisible": "true"
                 },
                 {
                     "Name": "Defect Status",
                     "Type": "String",
                     "IsFilterVisible": "true",
-                    "IsMetaDataVisible": "true",
-                    "IsWordWheelVisible": "true"
+                    "IsMetaDataVisible": "true"
                 },
                 {
                     "Name": "Blocked",
                     "Type": "Boolean",
                     "IsFilterVisible": "true",
-                    "IsMetaDataVisible": "true",
-                    "IsWordWheelVisible": "true"
+                    "IsMetaDataVisible": "true"
                 },
                 {
                     "Name": "Schedule State",
                     "Type": "String",
                     "IsFilterVisible": "true",
-                    "IsMetaDataVisible": "true",
-                    "IsWordWheelVisible": "true"
+                    "IsMetaDataVisible": "true"
+                },
+                {
+                    "Name": "Ready",
+                    "Type": "Boolean",
+                    "IsFilterVisible": "true",
+                    "IsMetaDataVisible": "true"
+                },
+                {
+                    "Name": "Accepted Date",
+                    "Type": "DateTime",
+                    "IsFilterVisible": "true",
+                    "IsMetaDataVisible": "true"
+                },
+                {
+                    "Name": "Type",
+                    "Type": "String",
+                    "IsFilterVisible": "true",
+                    "IsMetaDataVisible": "true"
+                },
+                {
+                    "Name": "FormattedID",
+                    "Type": "String",
+                    "IsFilterVisible": "false",
+                    "IsMetaDataVisible" : "false"
                 }
             ]
         };
@@ -122,61 +145,101 @@ PivotViewer.Models.Loaders.JSONLoader = PivotViewer.Models.Loaders.ICollectionLo
 
     _loadNextUserStoryItem: function(newData, data, newId){
 
-        newData = newData.HierarchicalRequirement;
+        var currentType;
+
+        if(newData.HierarchicalRequirement){
+            newData = newData.HierarchicalRequirement;
+            currentType = "User Story";
+        }
+        if(newData.Defect){
+            newData = newData.Defect;
+            currentType = "Defect";
+        }
 
         var item = {};
         item.Name = newData.Name;
         item.Description = newData.Description;
         item.Extension = "\n\t";
         item.Id = newId;
-        item.Img= "arabba.jpg";
+        item.Img= currentType === 'Defect' ? 'defect.jpg' : 'userStory.jpg';
         item.Href="http://localhost:7001/#/"+currentProject+"/detail/userstory/"+newData.ObjectID;
 
         item.Facets = {
             Facet: []
         };
+
         item.Facets.Facet.push(
             {
                 "String": {
-                    "Value": newData.Subscription._refObjectName
+                    "Value": newData.Subscription ? newData.Subscription._refObjectName : ""
                 },
                 "Name": "Subscription"
             },
             {
                 "String": {
-                    "Value": newData.Workspace._refObjectName
+                    "Value": newData.Name ? newData.Name : ""
+                },
+                "Name": "Name"
+            },
+            {
+                "String": {
+                    "Value": newData.Workspace ? newData.Workspace._refObjectName : ""
                 },
                 "Name": "Workspace"
             },
             {
                 "Boolean": {
-                    "Value": newData.Expedite
+                    "Value": newData.Expedite ? newData.Expedite : ""
                 },
                 "Name": "Expedite"
             },
             {
                 "String": {
-                    "Value": newData.DefectStatus
+                    "Value": newData.DefectStatus ? newData.DefectStatus : ""
                 },
                 "Name": "Defect Status"
             },
             {
                 "DateTime": {
-                    "Value": newData.CreationDate
+                    "Value": newData.CreationDate ? newData.CreationDate : ""
                 },
                 "Name": "Creation Date"
             },
             {
                 "Boolean": {
-                    "Value": newData.Blocked
+                    "Value": newData.Blocked ? newData.Blocked : ""
                 },
                 "Name": "Blocked"
             },
             {
                 "String": {
-                    "Value": newData.ScheduleState
+                    "Value": newData.ScheduleState ? newData.ScheduleState : ""
                 },
                 "Name": "Schedule State"
+            },
+            {
+                "String":{
+                    "Value": currentType
+                },
+                "Name": "Type"
+            },
+            {
+                "DateTime":{
+                    "Value": newData.AcceptedDate ? newData.AcceptedDate : ""
+                },
+                "Name": "Accepted Date"
+            },
+            {
+                "Boolean": {
+                    "Value": newData.Ready ? newData.Ready : ""
+                },
+                "Name": "Ready"
+            },
+            {
+                "String":{
+                    "Value": newData.FormattedID ? newData.FormattedID : ""
+                },
+                "Name": "FormattedID"
             }
         );
 

@@ -50,7 +50,7 @@ PivotViewer.Views.SimpleImageController = PivotViewer.Views.IImageController.sub
             for (var i = 0; i < images.ImageFiles.length; i++) {
                 var img = new Image();
                 img.src = that._baseUrl + "/" + images.ImageFiles[i];
-                that._items.push(new PivotViewer.Views.SimpleImageItem(images.ImageFiles[i], that._baseUrl, 100, 100, img));
+                that._items.push(new PivotViewer.Views.SimpleImageItem(images.ImageFiles[i], that._baseUrl, 50, 50, img));
            }
 
            //Loaded image file list
